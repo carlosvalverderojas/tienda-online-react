@@ -1,0 +1,22 @@
+/* Estilos del encabezado de la página */
+.header { 
+  display: flex; /* Coloca los elementos en fila */
+  justify-content: space-between; /* Separa los elementos hacia los extremos */
+  padding: 1rem; /* Espacio interno */
+  background: #fff; /* Fondo blanco */
+  border-bottom: 1px solid #ddd; /* Línea gris clara en la parte inferior */
+}
+
+/* Contenedor de cada tarjeta de producto */
+.product-card { 
+  background: #fff; /* Fondo blanco */
+  padding: 1rem; /* Espacio interno */
+  margin-bottom: 1rem; /* Separación entre tarjetas */
+  border-radius: 6px; /* Bordes ligeramente redondeados */
+}
+                
+/* Estilo de la imagen dentro de las tarjetas */
+.product-img { 
+  width: 100%; /* La imagen ocupa todo el ancho disponible */
+  border-radius: 6px; /* Bordes redondeados */
+}

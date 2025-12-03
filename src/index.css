@@ -1,0 +1,13 @@
+/* Estilos generales del cuerpo de la página */
+body { 
+  margin: 0; /* Quita el margen predeterminado del navegador */
+  font-family: Arial, sans-serif; /* Fuente principal del sitio */
+  background: #f2f2f2; /* Color gris claro de fondo */
+}
+
+/* Contenedor principal que centra el contenido de la página */
+.container { 
+  max-width: 1100px; /* Ancho máximo del contenido */
+  margin: auto; /* Centra el contenedor horizontalmente */
+  padding: 1rem; /* Espacio interno alrededor del contenido */
+}

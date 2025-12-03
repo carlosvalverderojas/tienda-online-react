@@ -1,0 +1,63 @@
+/* Estilo general de la tarjeta */
+.card {
+  background: white; /* Fondo blanco */
+  border-radius: 10px; /* Esquinas redondeadas */
+  padding: 1rem; /* Espacio interno */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Sombra suave */
+  transition: transform 0.2s; /* Animación para el efecto al pasar el mouse */
+}
+
+/* Efecto cuando el usuario pasa el mouse sobre la tarjeta */
+.card:hover {
+  transform: translateY(-5px); /* La tarjeta sube un poco */
+}
+
+/* Imagen dentro de la tarjeta */
+.card__img {
+  width: 100%; /* Ocupa todo el ancho disponible */
+  height: 160px; /* Alto fijo */
+  object-fit: cover; /* La imagen se recorta de forma apropiada */
+  border-radius: 8px; /* Esquinas suaves */
+  margin-bottom: .8rem; /* Espacio inferior */
+}
+
+/* Título del producto */
+.card__title {
+  margin-bottom: .5rem; /* Separación hacia abajo */
+  font-size: 1.1rem; /* Tamaño de texto */
+}
+
+/* Precio del producto */
+.card__price {
+  font-weight: bold; /* Texto en negrita */
+  color: #2ecc71; /* Color verde llamativo */
+  margin-bottom: .8rem; /* Espacio inferior */
+}
+
+/* Contenedor de botones */
+.card__actions {
+  display: flex; /* Alinea elementos en fila */
+  justify-content: space-between; /* Espacia los botones a los extremos */
+}
+
+/* Estilos básicos para ambos botones */
+.card__btn {
+  padding: .5rem .8rem; /* Tamaño del botón */
+  border-radius: 6px; /* Bordes redondeados */
+  cursor: pointer; /* Muestra la mano al pasar el mouse */
+  font-size: .9rem; /* Ajuste de texto */
+  text-decoration: none; /* Quita el subrayado del Link */
+}
+
+/* Botón de información */
+.card__btn--info {
+  background: #a29bfe; /* Color morado */
+  color: white; /* Texto blanco */
+}
+
+/* Botón para agregar al carrito */
+.card__btn--add {
+  background: #6ab04c; /* Color verde */
+  color: white; /* Texto blanco */
+}
+

@@ -1,0 +1,79 @@
+/* Contenedor principal del banner */
+.home__hero {
+  position: relative; /* Permite colocar texto encima de la imagen */
+  height: 600px; /* Alto del banner */
+  overflow: hidden; /* Oculta lo que se salga del contenedor */
+  border-radius: 12px; /* Bordes redondeados */
+  margin-bottom: 2rem; /* Espacio debajo del banner */
+}
+
+/* Imagen del banner */
+.home__hero-img {
+  width: 100%; /* Ocupa todo el ancho */
+  height: 100%; /* Ocupa todo el alto */
+  object-fit: cover; /* Ajusta la imagen sin deformarla */
+  filter: brightness(65%); /* Oscurece la imagen para que el texto resalte */
+}
+
+/* Contenedor del texto que va encima de la imagen */
+.home__hero-text {
+  position: absolute; /* Permite ubicar el texto sobre la imagen */
+  top: 50%; /* Centra verticalmente */
+  left: 50%; /* Centra horizontalmente */
+  transform: translate(-50%, -50%); /* Ajusta el centro exacto */
+  color: white; /* Texto en blanco */
+  text-align: center; /* Alineación centrada */
+}
+
+/* Título del banner */
+.home__hero-text h1 {
+  font-size: 2.5rem; /* Tamaño grande */
+  margin-bottom: 0.5rem; /* Espacio hacia abajo */
+}
+
+/* Descripción debajo del título */
+.home__hero-text p {
+  font-size: 1.2rem; /* Texto un poco más grande */
+  margin-bottom: 1rem; /* Separación inferior */
+}
+
+/* Botón del banner */
+.home__btn {
+  padding: 0.7rem 1.4rem; /* Tamaño del botón */
+  background: #3498db; /* Color azul */
+  color: white; /* Texto blanco */
+  border-radius: 8px; /* Bordes redondeados */
+  text-decoration: none; /* Sin subrayado */
+  font-weight: bold; /* Texto en negrita */
+  transition: 0.3s; /* Suaviza el hover */
+}
+
+/* Efecto cuando se pasa el mouse sobre el botón */
+.home__btn:hover {
+  background: #217dbb; /* Azul más oscuro */
+}
+
+/* Sección dividida en dos columnas */
+.home__seccion {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin: 3rem 0;
+}
+
+.home__col {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.home__col h2 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.home__col p {
+  color: #555;
+  line-height: 1.6rem;
+}

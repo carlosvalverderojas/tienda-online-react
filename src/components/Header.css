@@ -1,0 +1,53 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: white;
+  border-bottom: 1px solid #e5e5e5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.header__left {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.header__logo {
+  width: 45px;
+  height: 45px;
+}
+
+.header__title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.header__nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.header__btn {
+  padding: 0.6rem 1.2rem;
+  background: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.header__btn:hover {
+  background: #217dbb;
+}
+
+.carrito {
+  background: #2ecc71;
+}
+
+.carrito:hover {
+  background: #27ae60;
+}

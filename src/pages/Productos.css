@@ -1,0 +1,22 @@
+/* Estilo del título de la página de productos */
+.productos__titulo {
+  font-size: 2rem; /* Tamaño grande del texto */
+  margin-bottom: 1rem; /* Espacio debajo del título */
+}
+
+/* Estilo del cuadro de búsqueda */
+.productos__buscador {
+  width: 100%; /* Ocupa todo el ancho disponible */
+  padding: 0.8rem; /* Espacio interno */
+  margin-bottom: 1.5rem; /* Separación con los productos */
+  border-radius: 8px; /* Bordes redondeados */
+  border: 1px solid #ccc; /* Borde gris claro */
+}
+
+/* Contenedor en forma de cuadriculado donde se muestran los productos */
+.productos__grid {
+  display: grid; /* Activa el modo cuadriculado */
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
+  /* Crea columnas automáticas de mínimo 240px y máximo igual al resto del espacio */
+  gap: 1.5rem; /* Espacio entre los productos */
+}
