@@ -26,6 +26,7 @@ export default function ProductoDetalle({ onAdd }) {
         <div className="detalle__thumbs">
           <img
             src={producto.imagen}
+            alt={producto.nombre}
             className="thumb"
             onClick={() => setImgPrincipal(producto.imagen)}
           />
