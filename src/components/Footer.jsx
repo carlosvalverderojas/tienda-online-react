@@ -1,44 +1,16 @@
-// Importamos React para poder usar JSX.
+// Importamos React para poder crear el componente.
 import React from "react";
 
-// Importamos Link para crear enlaces internos sin recargar la página.
-import { Link } from "react-router-dom";
+// Importamos los estilos del footer.
+import "./Footer.css";
 
-// Importamos los estilos específicos del encabezado.
-import "./Header.css";
-
-// Componente Header que recibe la cantidad total de ítems en el carrito.
-export default function Header({ totalItems }) {
+// Componente que muestra el pie de página de la aplicación.
+export default function Footer() {
   return (
-    // Contenedor principal del encabezado.
-    <header className="header">
-
-      {/* Sección izquierda: aquí ponemos el logo y el nombre de la tienda */}
-      <div className="header__left">
-        <img 
-          src="/imagenes/logo.jpg"         // Ruta del logo
-          alt="Logo"                        // Texto alternativo por accesibilidad
-          className="header__logo"          // Clase para darle estilo al logo
-        />
-
-        {/* Nombre de la tienda al lado del logo */}
-        <span className="header__title">Tienda CV</span>
-      </div>
-
-      {/* Menú de navegación con botones para moverse por la aplicación */}
-      <nav className="header__nav">
-
-        {/* Botón que lleva a la página de inicio */}
-        <Link className="header__btn" to="/">Inicio</Link>
-
-        {/* Botón que lleva a la lista de productos */}
-        <Link className="header__btn" to="/productos">Productos</Link>
-
-        {/* Botón que lleva al carrito e incluye la cantidad actual */}
-        <Link className="header__btn carrito" to="/carrito">
-          Carrito ({totalItems})   {/* Muestra cuántos ítems hay en el carrito */}
-        </Link>
-      </nav>
-    </header>
+    // Etiqueta <footer> que contiene el texto final de la página.
+    <footer className="footer">
+      {/* Texto que aparecerá centrado en la parte inferior */}
+      © 2024 Tienda CV — Todos los derechos reservados.
+    </footer>
   );
 }
