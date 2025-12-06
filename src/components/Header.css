@@ -1,53 +1,62 @@
+/* Contenedor principal del encabezado (barra superior) */
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background: white;
-  border-bottom: 1px solid #e5e5e5;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  display: flex;                          /* Coloca los elementos uno al lado del otro */
+  justify-content: space-between;         /* Separa el logo a la izquierda y el menú a la derecha */
+  align-items: center;                    /* Alinea todo verticalmente al centro */
+  padding: 1rem 2rem;                     /* Espacio interno para que no se vea apretado */
+  background: white;                      /* Fondo blanco */
+  border-bottom: 1px solid #e5e5e5;       /* Línea gris muy suave debajo */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Sombra ligera para darle relieve */
 }
 
+/* Contenedor donde van el logo y el nombre de la tienda */
 .header__left {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
+  display: flex; /* Coloca logo + texto en línea */
+  align-items: center; /* Centra el logo y el texto entre sí */
+  gap: 0.8rem; /* Espacio pequeño entre el logo y el texto */
 }
 
+/* Tamaño del logo */
 .header__logo {
-  width: 45px;
-  height: 45px;
+  width: 45px; /* Ancho del logo */
+  height: 45px; /* Alto del logo */
 }
 
+/* Estilo del texto "Tienda CV" */
 .header__title {
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: #333;
+  font-size: 1.4rem;  /* Tamaño de fuente más grande */
+  font-weight: bold; /* Texto en negrita */
+  color: #333; /* Gris oscuro para buena lectura */
 }
 
+/* Contenedor del menú de navegación */
 .header__nav {
-  display: flex;
-  gap: 1rem;
+  display: flex; /* Los enlaces se colocan en línea */
+  gap: 1rem; /* Espacio entre cada botón */
 }
 
+/* Estilos para cada botón del menú */
 .header__btn {
-  padding: 0.6rem 1.2rem;
-  background: #3498db;
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: bold;
-  transition: 0.2s;
+  padding: 0.6rem 1.2rem;      /* Tamaño del botón */
+  background: #3498db;       /* Color azul principal */
+  color: white;             /* Texto blanco */
+  text-decoration: none;      /* Quita el subrayado */
+  border-radius: 8px;        /* Bordes redondeados */
+  font-weight: bold;        /* Texto más marcado */
+  transition: 0.2s;         /* Suaviza el efecto al pasar el mouse */
 }
 
+/* Efecto hover: cuando el user pasa el mouse por encima */
 .header__btn:hover {
-  background: #217dbb;
+  background: #217dbb; /* Azul más oscuro */
 }
 
+/* Estilo exclusivo del botón del carrito */
 .carrito {
-  background: #2ecc71;
+  background: #2ecc71;/* Color verde para diferenciarlo */
 }
 
+/* Hover del botón del carrito */
 .carrito:hover {
-  background: #27ae60;
+  background: #27ae60; /* Verde más oscuro al pasar mouse */
 }

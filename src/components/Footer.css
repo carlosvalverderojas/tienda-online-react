@@ -1,9 +1,10 @@
+/* Estilos para el pie de página de la aplicación */
 .footer {
-  margin-top: 3rem;
-  padding: 1rem;
-  text-align: center;
-  background: #3498db;
-  color: white;
-  font-weight: bold;
-  border-radius: 12px 12px 0 0;
+  margin-top: 3rem;              /* Espacio grande encima del footer */
+  padding: 1rem;                 /* Espacio interno para que el texto no quede pegado */
+  text-align: center;            /* Centra el texto dentro del footer */
+  background: #3498db;         /* Fondo azul para destacarlo */
+  color: white;                /* Texto en blanco para buen contraste */
+  font-weight: bold;             /* Texto en negrita */
+  border-radius: 12px 12px 0 0;  /* Bordes superiores redondeados para aspecto elegante */
 }
