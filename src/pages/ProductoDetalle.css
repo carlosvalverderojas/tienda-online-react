@@ -1,98 +1,105 @@
+/* Contenedor principal del detalle del producto */
 .detalle {
-  display: flex;
-  gap: 2rem;
-  background: #fff;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  max-width: 1100px;
-  margin: 2rem auto;
+  display: flex;                 /* Coloca la galería y la información a la par */
+  gap: 2rem;                     /* Espacio entre las dos columnas */
+  background: #fff;              /* Fondo blanco para un diseño limpio */
+  padding: 2rem;                 /* Espacio interno alrededor del contenido */
+  border-radius: 12px;           /* Bordes redondeados */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);  /* Sombra suave para darle relieve */
+  max-width: 1100px;             /* Evita que el contenido sea demasiado ancho */
+  margin: 2rem auto;             /* Centra el bloque en la pantalla */
 }
 
-/* CONTENEDOR DE IMÁGENES */
+/* Área donde se muestran las imágenes del producto */
 .detalle__galeria {
-  flex: 1;
+  flex: 1;                       /* Ocupa una parte proporcional del espacio */
 }
 
-/* IMAGEN PRINCIPAL */
+/* Imagen grande que se muestra primero */
 .detalle__img-main {
-  width: 100%;
-  max-width: 400px;
-  border-radius: 10px;
-  object-fit: contain;
-  background: #f4f4f4;
-  padding: 10px;
-  cursor: zoom-in;
-  transition: transform 0.3s ease;
+  width: 100%;                   /* Ocupa todo el ancho posible dentro del contenedor */
+  max-width: 400px;              /* Limita el tamaño para que no sea gigante */
+  border-radius: 10px;           /* Bordes suavizados */
+  object-fit: contain;           /* Ajusta la imagen sin deformarla */
+  background: #f4f4f4;           /* Fondo gris claro detrás de la imagen */
+  padding: 10px;                 /* Espacio interno alrededor de la foto */
+  cursor: zoom-in;               /* Cambia el cursor indicando que se puede ampliar */
+  transition: transform 0.3s ease; /* Suaviza la animación del zoom */
 }
 
-/* ZOOM AL HACER HOVER */
+/* Cuando el usuario pasa el mouse por encima, la imagen hace zoom */
 .detalle__img-main:hover {
-  transform: scale(1.3);
+  transform: scale(1.3);         /* Amplía la imagen suavemente */
 }
 
-/* MINIATURAS */
+/* Contenedor donde van las miniaturas */
 .detalle__thumbs {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
+  display: flex;                 /* Las miniaturas se alinean horizontalmente */
+  gap: 10px;                     /* Espacio entre ellas */
+  margin-top: 10px;              /* Separación respecto a la imagen principal */
 }
 
+/* Diseño de cada miniatura */
 .thumb {
-  width: 70px;
-  height: 70px;
-  object-fit: contain;
-  background: #eee;
-  border-radius: 8px;
-  cursor: pointer;
-  padding: 4px;
-  transition: 0.2s;
+  width: 70px;                   /* Ancho fijo */
+  height: 70px;                  /* Alto fijo */
+  object-fit: contain;           /* Ajusta la imagen al recuadro sin deformarse */
+  background: #eee;              /* Fondo gris claro */
+  border-radius: 8px;            /* Bordes redondeados */
+  cursor: pointer;               /* Indica que se puede hacer clic */
+  padding: 4px;                  /* Espacio interno */
+  transition: 0.2s;              /* Animación suave al interactuar */
 }
 
+/* Efecto visual al pasar el mouse por encima de una miniatura */
 .thumb:hover {
-  border: 2px solid #3498db;
+  border: 2px solid #3498db;     /* Marca la miniatura con un borde azul */
 }
 
-/* INFORMACIÓN */
+/* Columna derecha que contiene la información del producto */
 .detalle__info {
-  flex: 2;
+  flex: 2;                       /* Ocupa más espacio que la galería */
 }
 
+/* Estilo para la descripción del producto */
 .detalle__desc {
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
+  font-size: 1.1rem;             /* Texto un poco más grande */
+  margin-bottom: 1rem;           /* Espacio debajo del párrafo */
 }
 
+/* Estilo del precio del producto */
 .detalle__price {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #2ecc71;
-  margin-bottom: 1.5rem;
+  font-size: 2rem;               /* Precio grande para destacar */
+  font-weight: bold;             /* Letras gruesas */
+  color: #2ecc71;                /* Color verde para resaltar */
+  margin-bottom: 1.5rem;         /* Espacio hacia abajo */
 }
 
-/* BOTÓN COMO AMAZON */
+/* Botón estilo tipo Amazon */
 .detalle__btn {
-  padding: 12px 20px;
-  background: #ff9900;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  color: #fff;
-  cursor: pointer;
-  margin-bottom: 1.5rem;
-  transition: 0.3s;
+  padding: 12px 20px;            /* Tamaño del botón */
+  background: #ff9900;           /* Color naranja estilo Amazon */
+  border: none;                  /* Sin borde */
+  border-radius: 8px;            /* Bordes redondeados */
+  font-size: 1.1rem;             /* Tamaño del texto */
+  color: #fff;                   /* Texto blanco */
+  cursor: pointer;               /* Manito al pasar el mouse */
+  margin-bottom: 1.5rem;         /* Espacio hacia abajo */
+  transition: 0.3s;              /* Suaviza la animación */
 }
 
+/* Efecto cuando el cursor pasa sobre el botón */
 .detalle__btn:hover {
-  background: #cc7a00;
+  background: #cc7a00;           /* Oscurece un poco el color */
 }
 
-/* SECCIÓN EXTRA */
+/* Estilos para el texto de características adicionales */
 .detalle__extra ul {
-  margin-top: 10px;
-  line-height: 1.6;
+  margin-top: 10px;              /* Espacio arriba de la lista */
+  line-height: 1.6;              /* Más espacio entre cada línea */
 }
 
+/* Título de la sección de características */
 .detalle__extra h3 {
-  margin-top: 1rem;
+  margin-top: 1rem;              /* Espacio sobre el título */
 }
