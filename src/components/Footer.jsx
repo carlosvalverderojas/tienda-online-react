@@ -10,7 +10,7 @@ export default function Footer() {
     // Etiqueta <footer> que contiene el texto final de la página.
     <footer className="footer">
       {/* Texto que aparecerá centrado en la parte inferior */}
-      © 2025 Tienda CV — Todos los derechos reservados.
+      &copy; 2025 Tienda CV — Todos los derechos reservados.
     </footer>
   );
 }
