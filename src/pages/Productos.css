@@ -20,3 +20,69 @@
   /* Crea columnas automáticas de mínimo 240px y máximo igual al resto del espacio */
   gap: 1.5rem; /* Espacio entre los productos */
 }
+
+.productos__buscar {
+  width: 100%;
+  padding: 10px;
+  margin: 15px 0;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* =========================
+   FILTROS FACET
+   ========================= */
+
+.productos__filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  margin: 12px 0 18px;
+  padding: 12px;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.filtro {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+  flex: 1;
+}
+
+.filtro__label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.filtro__select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #cfcfcf;
+  background: #fff;
+  outline: none;
+}
+
+.filtro__select:focus {
+  border-color: #7a7a7a;
+}
+
+.filtro__btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #cfcfcf;
+  background: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  height: 42px; /* para que quede alineado con los selects */
+}
+
+.filtro__btn:hover {
+  background: #f0f0f0;
+}

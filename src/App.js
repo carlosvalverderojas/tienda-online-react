@@ -10,6 +10,8 @@ import Home from "./pages/Home";
 import Productos from "./pages/Productos";
 import ProductoDetalle from "./pages/ProductoDetalle";
 import Carrito from "./pages/Carrito";
+import Saludo from "./components/Saludo";
+
 
 // Importa el hook que maneja toda la lógica del carrito.
 import { useCarrito } from "./hooks/useCarrito";
@@ -64,7 +66,8 @@ export default function App() {
               />
             }
           />
-
+          {/* NUEVA RUTA PARA EL MICROSERVICIO */}
+          <Route path="/saludo" element={<Saludo />} />
         </Routes>
       </div>
       <Footer />

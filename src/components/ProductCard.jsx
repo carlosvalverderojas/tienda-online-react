@@ -14,8 +14,12 @@ export default function ProductCard({ producto, onAdd }) {
     <div className="card">
 
       {/* Imagen del producto. */}
-      <img className="card__img" src={producto.imagen} alt={producto.nombre} />
-
+      <img
+        className="card__img"
+        src={`/img/${producto.imagen}`}
+        alt={producto.nombre}
+      />
+      
       {/* Nombre del producto. */}
       <h3 className="card__title">{producto.nombre}</h3>
 
