@@ -3,9 +3,9 @@ import {
   obtenerProductos,
   buscarProductos,
   obtenerFacets,
-} from "./services/productosService";
-import ProductCard from "./components/ProductCard";
-import "./Productos.css";
+} from "../services/productosService";
+import ProductCard from "../components/ProductCard";
+import "../Productos.css";
 
 export default function Productos({ onAdd }) {
   const [productos, setProductos] = useState([]);
