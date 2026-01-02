@@ -3,8 +3,8 @@ import {
   obtenerProductos,
   buscarProductos,
   obtenerFacets,
-} from "../services/productosService";
-import ProductCard from "../components/ProductCard";
+} from "./services/productosService";
+import ProductCard from "./components/ProductCard";
 import "./Productos.css";
 
 export default function Productos({ onAdd }) {
@@ -19,22 +19,31 @@ export default function Productos({ onAdd }) {
   const [filtroNombre, setFiltroNombre] = useState("");
   const [filtroPrecio, setFiltroPrecio] = useState("");
 
-  //Cargar productos + facets UNA sola vez al inicio
+  // Cargar productos + facets UNA sola vez al inicio
   useEffect(() => {
     const cargar = async () => {
       try {
         setError(false);
         setCargando(true);
 
-        const [dataProd, dataFacets] = await Promise.all([
-          obtenerProductos(),
-          obtenerFacets(),
-        ]);
-
+        // 1) Productos (obligatorio)
+        const dataProd = await obtenerProductos();
         setProductosBase(dataProd);
         setProductos(dataProd);
-        setFacets(dataFacets);
+
+        // 2) Facets (opcional: si falla NO rompe la UI)
+        try {
+          const dataFacets = await obtenerFacets();
+          if (dataFacets) {
+            setFacets(dataFacets);
+          } else {
+            setFacets({ nombres: [], precios: [] });
+          }
+        } catch {
+          setFacets({ nombres: [], precios: [] });
+        }
       } catch {
+        // Solo error si NO se pudieron obtener productos
         setError(true);
       } finally {
         setCargando(false);
@@ -44,7 +53,7 @@ export default function Productos({ onAdd }) {
     cargar();
   }, []);
 
-  //Búsqueda en tiempo real con debounce + filtros
+  // Búsqueda en tiempo real con debounce + filtros
   useEffect(() => {
     if (productosBase.length === 0) return;
 
@@ -54,14 +63,14 @@ export default function Productos({ onAdd }) {
       try {
         setError(false);
 
-        //Si no hay texto ni filtros: mostrar base (sin llamar backend)
+        // Si no hay texto ni filtros: mostrar base (sin llamar backend)
         if (valor === "" && filtroNombre === "" && filtroPrecio === "") {
           setProductos(productosBase);
           setCargando(false);
           return;
         }
 
-        //Si el texto es muy corto (1-2 chars) y no hay filtros: no consultar ES
+        // Si el texto es muy corto (1-2 chars) y no hay filtros: no consultar ES
         if (
           valor.length > 0 &&
           valor.length < 3 &&
@@ -85,7 +94,7 @@ export default function Productos({ onAdd }) {
         // Completar campos faltantes (imagen) desde base
         const completos = data.map((p) => {
           const ref = productosBase.find((x) => x.id === p.id);
-          return ref ? { ...ref, ...p } : p;
+          return ref ? { ...ref, ...p } : p; // corrección importante
         });
 
         setProductos(completos);
@@ -112,7 +121,7 @@ export default function Productos({ onAdd }) {
       {/* Buscador */}
       <input
         type="text"
-        placeholder="Buscar producto..."
+        placeholder="Buscar producto."
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
         className="productos__buscar"
@@ -166,7 +175,7 @@ export default function Productos({ onAdd }) {
         </button>
       </div>
 
-      {cargando && <p>Cargando...</p>}
+      {cargando && <p>Cargando.</p>}
 
       <div className="productos__grid">
         {productos.map((producto) => (

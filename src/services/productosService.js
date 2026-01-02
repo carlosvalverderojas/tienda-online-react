@@ -24,7 +24,11 @@ export async function buscarProductos(texto) {
 
 // Facets
 export async function obtenerFacets() {
-  const response = await fetch(`${API_URL}/facets`);
-  if (!response.ok) throw new Error("Error al obtener facets");
-  return await response.json();
+  try {
+    const response = await fetch(`${API_URL}/facets`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (e) {
+    return null;
+  }
 }
