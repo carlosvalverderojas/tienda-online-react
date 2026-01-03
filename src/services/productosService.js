@@ -2,17 +2,12 @@
 // - En local: usa localhost
 // - En producción (Netlify): usa la variable REACT_APP_API_URL
 const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:8080";
-
-// Recurso productos en el Gateway
 const API_URL = `${API_BASE}/cliente/productos`;
 
-/** -------------------------
- * Helper: timeout
- * ------------------------- */
-async function fetchConTimeout(url, options = {}, ms = 15000) {
+// ---- Timeout
+async function fetchConTimeout(url, options = {}, ms = 20000) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), ms);
-
   try {
     return await fetch(url, { ...options, signal: controller.signal });
   } finally {
@@ -20,43 +15,29 @@ async function fetchConTimeout(url, options = {}, ms = 15000) {
   }
 }
 
-/** -------------------------
- * Anti-rate-limit (429)
- * ------------------------- */
+// ---- Cache + cooldown 429
 let cacheProductos = null;
-let cacheProductosAt = 0;
-const CACHE_TTL_MS = 60_000; // 60s
+let cacheAt = 0;
+const CACHE_TTL = 60_000; // 60s
 
 let cooldownUntil = 0;
 const COOLDOWN_MS = 12_000; // 12s
 
-function ahora() {
-  return Date.now();
-}
-
-function enCooldown() {
-  return ahora() < cooldownUntil;
-}
-
-function setCooldown() {
-  cooldownUntil = ahora() + COOLDOWN_MS;
-}
-
-/** -------------------------
- * API
- * ------------------------- */
+const now = () => Date.now();
+const inCooldown = () => now() < cooldownUntil;
+const setCooldown = () => (cooldownUntil = now() + COOLDOWN_MS);
 
 // Obtener todos los productos
 export async function obtenerProductos({ force = false } = {}) {
-  if (!force && enCooldown()) {
+  if (!force && inCooldown()) {
     throw new Error("Rate limit (429). Espera unos segundos y recarga.");
   }
 
-  if (!force && cacheProductos && ahora() - cacheProductosAt < CACHE_TTL_MS) {
+  if (!force && cacheProductos && now() - cacheAt < CACHE_TTL) {
     return cacheProductos;
   }
 
-  const response = await fetchConTimeout(API_URL, {}, 20000);
+  const response = await fetchConTimeout(API_URL);
 
   if (response.status === 429) {
     setCooldown();
@@ -67,46 +48,36 @@ export async function obtenerProductos({ force = false } = {}) {
 
   const data = await response.json();
   cacheProductos = data;
-  cacheProductosAt = ahora();
+  cacheAt = now();
   return data;
 }
 
-// Buscar productos por texto (Elastic)
+// Buscar productos por texto
 export async function buscarProductos(texto) {
   const q = (texto || "").trim();
   if (!q) return [];
 
-  if (enCooldown()) {
-    throw new Error("Rate limit (429). Espera unos segundos e intenta de nuevo.");
+  // evita spam: si < 3 chars, no llames al gateway
+  if (q.length < 3) return [];
+
+  if (inCooldown()) {
+    throw new Error("Rate limit (429). Espera unos segundos.");
   }
 
-  const url = `${API_URL}/buscar?texto=${encodeURIComponent(q)}`;
-  const response = await fetchConTimeout(url, {}, 20000);
+  const response = await fetchConTimeout(
+    `${API_URL}/buscar?texto=${encodeURIComponent(q)}`
+  );
 
   if (response.status === 429) {
     setCooldown();
-    throw new Error("Rate limit (429). Espera unos segundos e intenta de nuevo.");
+    throw new Error("Rate limit (429). Espera unos segundos.");
   }
 
   if (!response.ok) throw new Error("Error al buscar productos");
   return await response.json();
 }
 
-// Facets (opcional; en Render te daba 500)
+// Facets: desactivado (tu backend da 500)
 export async function obtenerFacets() {
-  try {
-    if (enCooldown()) return null;
-
-    const response = await fetchConTimeout(`${API_URL}/facets`, {}, 15000);
-
-    if (response.status === 429) {
-      setCooldown();
-      return null;
-    }
-
-    if (!response.ok) return null;
-    return await response.json();
-  } catch {
-    return null;
-  }
+  return { nombres: [], precios: [] };
 }
