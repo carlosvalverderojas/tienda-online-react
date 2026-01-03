@@ -12,7 +12,8 @@ export default function Productos({ onAdd }) {
   const [productosBase, setProductosBase] = useState([]);
   const [facets, setFacets] = useState({ nombres: [], precios: [] });
 
-  const [error, setError] = useState(false);
+  const [errorFatal, setErrorFatal] = useState(false); // solo si falla cargar productos inicial
+  const [errorBusqueda, setErrorBusqueda] = useState(""); // fallos de buscar/filtros (no crashea)
   const [texto, setTexto] = useState("");
   const [cargando, setCargando] = useState(false);
 
@@ -23,7 +24,8 @@ export default function Productos({ onAdd }) {
   useEffect(() => {
     const cargar = async () => {
       try {
-        setError(false);
+        setErrorFatal(false);
+        setErrorBusqueda("");
         setCargando(true);
 
         // 1) Productos (obligatorio)
@@ -34,7 +36,7 @@ export default function Productos({ onAdd }) {
         // 2) Facets (opcional: si falla NO rompe la UI)
         try {
           const dataFacets = await obtenerFacets();
-          if (dataFacets) {
+          if (dataFacets && (dataFacets.nombres || dataFacets.precios)) {
             setFacets(dataFacets);
           } else {
             setFacets({ nombres: [], precios: [] });
@@ -43,8 +45,8 @@ export default function Productos({ onAdd }) {
           setFacets({ nombres: [], precios: [] });
         }
       } catch {
-        // Solo error si NO se pudieron obtener productos
-        setError(true);
+        // Solo error fatal si NO se pudieron obtener productos
+        setErrorFatal(true);
       } finally {
         setCargando(false);
       }
@@ -60,30 +62,29 @@ export default function Productos({ onAdd }) {
     const timer = setTimeout(async () => {
       const valor = texto.trim();
 
+      // Si no hay texto ni filtros: mostrar base (sin llamar backend)
+      if (valor === "" && filtroNombre === "" && filtroPrecio === "") {
+        setErrorBusqueda("");
+        setProductos(productosBase);
+        return;
+      }
+
+      // Si el texto es muy corto (1-2 chars) y no hay filtros: no consultar backend
+      if (
+        valor.length > 0 &&
+        valor.length < 3 &&
+        filtroNombre === "" &&
+        filtroPrecio === ""
+      ) {
+        setErrorBusqueda("");
+        setProductos(productosBase);
+        return;
+      }
+
+      setCargando(true);
+      setErrorBusqueda("");
+
       try {
-        setError(false);
-
-        // Si no hay texto ni filtros: mostrar base (sin llamar backend)
-        if (valor === "" && filtroNombre === "" && filtroPrecio === "") {
-          setProductos(productosBase);
-          setCargando(false);
-          return;
-        }
-
-        // Si el texto es muy corto (1-2 chars) y no hay filtros: no consultar ES
-        if (
-          valor.length > 0 &&
-          valor.length < 3 &&
-          filtroNombre === "" &&
-          filtroPrecio === ""
-        ) {
-          setProductos(productosBase);
-          setCargando(false);
-          return;
-        }
-
-        setCargando(true);
-
         // Construir query combinando texto + filtros
         let query = valor;
         if (filtroNombre) query = (query + " " + filtroNombre).trim();
@@ -92,24 +93,28 @@ export default function Productos({ onAdd }) {
         const data = await buscarProductos(query);
 
         // Completar campos faltantes (imagen) desde base
-        const completos = data.map((p) => {
+        const completos = (data || []).map((p) => {
           const ref = productosBase.find((x) => x.id === p.id);
-          return ref ? { ...ref, ...p } : p; // corrección importante
+          return ref ? { ...ref, ...p } : p;
         });
 
+        // Si la búsqueda devuelve vacío, lo mostramos como vacío (no es error)
         setProductos(completos);
-      } catch {
-        setError(true);
-        setProductos([]);
+      } catch (e) {
+        // NO crashear toda la pantalla: volvemos a base y mostramos aviso
+        setProductos(productosBase);
+        setErrorBusqueda(
+          "La búsqueda no está disponible temporalmente. Mostrando catálogo completo."
+        );
       } finally {
         setCargando(false);
       }
-    }, 400);
+    }, 450);
 
     return () => clearTimeout(timer);
   }, [texto, filtroNombre, filtroPrecio, productosBase]);
 
-  if (error) return <p>No se pudieron cargar los productos</p>;
+  if (errorFatal) return <p>No se pudieron cargar los productos</p>;
 
   const hayFiltro =
     texto.trim() !== "" || filtroNombre !== "" || filtroPrecio !== "";
@@ -137,7 +142,7 @@ export default function Productos({ onAdd }) {
             onChange={(e) => setFiltroNombre(e.target.value)}
           >
             <option value="">Selecciona una palabra clave</option>
-            {facets.nombres?.map((b) => (
+            {(facets.nombres || []).map((b) => (
               <option key={b.key} value={b.key}>
                 {b.key} ({b.count})
               </option>
@@ -153,7 +158,7 @@ export default function Productos({ onAdd }) {
             onChange={(e) => setFiltroPrecio(e.target.value)}
           >
             <option value="">Todos los precios</option>
-            {facets.precios?.map((b) => (
+            {(facets.precios || []).map((b) => (
               <option key={b.key} value={b.key}>
                 {b.key} ({b.count})
               </option>
@@ -168,6 +173,7 @@ export default function Productos({ onAdd }) {
             setTexto("");
             setFiltroNombre("");
             setFiltroPrecio("");
+            setErrorBusqueda("");
             setProductos(productosBase);
           }}
         >
@@ -175,6 +181,7 @@ export default function Productos({ onAdd }) {
         </button>
       </div>
 
+      {errorBusqueda && <p>{errorBusqueda}</p>}
       {cargando && <p>Cargando.</p>}
 
       <div className="productos__grid">
