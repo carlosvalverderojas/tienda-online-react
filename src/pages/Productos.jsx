@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   obtenerProductos,
   buscarProductos,
@@ -71,29 +71,32 @@ export default function Productos({ onAdd }) {
     cargar();
   }, []);
 
-  // Aplicar filtros locales (nombre + precio) SOBRE productosBase
-  const aplicarFiltrosLocales = (lista) => {
-    let out = [...lista];
+  // ✅ FIX: aplicarFiltrosLocales estable para que Netlify/ESLint no truene
+  const aplicarFiltrosLocales = useCallback(
+    (lista) => {
+      let out = [...lista];
 
-    if (filtroNombre) {
-      const k = filtroNombre.toLowerCase();
-      out = out.filter((p) => (p.nombre || "").toLowerCase().includes(k));
-    }
-
-    if (filtroPrecio) {
-      const rango = PRICE_RANGES.find((r) => r.key === filtroPrecio);
-      if (rango) {
-        out = out.filter((p) => {
-          const precio = toNumberSafe(p.precio);
-          const okMin = rango.min == null ? true : precio >= rango.min;
-          const okMax = rango.max == null ? true : precio <= rango.max;
-          return okMin && okMax;
-        });
+      if (filtroNombre) {
+        const k = filtroNombre.toLowerCase();
+        out = out.filter((p) => (p.nombre || "").toLowerCase().includes(k));
       }
-    }
 
-    return out;
-  };
+      if (filtroPrecio) {
+        const rango = PRICE_RANGES.find((r) => r.key === filtroPrecio);
+        if (rango) {
+          out = out.filter((p) => {
+            const precio = toNumberSafe(p.precio);
+            const okMin = rango.min == null ? true : precio >= rango.min;
+            const okMax = rango.max == null ? true : precio <= rango.max;
+            return okMin && okMax;
+          });
+        }
+      }
+
+      return out;
+    },
+    [filtroNombre, filtroPrecio]
+  );
 
   // Búsqueda + filtros
   useEffect(() => {
@@ -151,7 +154,7 @@ export default function Productos({ onAdd }) {
     }, 350);
 
     return () => clearTimeout(timer);
-  }, [texto, filtroNombre, filtroPrecio, productosBase]);
+  }, [texto, productosBase, aplicarFiltrosLocales]);
 
   if (errorFatal) return <p>No se pudieron cargar los productos.</p>;
 
@@ -180,11 +183,14 @@ export default function Productos({ onAdd }) {
           >
             <option value="">Selecciona una palabra clave</option>
 
-            {/* Si facets trae nombres, los usamos. Si no, generamos opciones desde productosBase */}
             {(facets.nombres?.length
               ? facets.nombres.map((b) => b.key)
               : Array.from(
-                  new Set(productosBase.map((p) => (p.nombre || "").split(" ")[0]).filter(Boolean))
+                  new Set(
+                    productosBase
+                      .map((p) => (p.nombre || "").split(" ")[0])
+                      .filter(Boolean)
+                  )
                 )
             ).map((k) => (
               <option key={k} value={k}>
