@@ -73,11 +73,35 @@ export async function buscarProductos(texto) {
     throw new Error("Rate limit (429). Espera unos segundos.");
   }
 
-  if (!response.ok) throw new Error("Error al buscar productos");
+  if (!response.ok) {
+    // No romper la UI si falla la búsqueda (Elastic no disponible, etc.)
+    return [];
+  }
+
   return await response.json();
 }
 
-// Facets: desactivado (tu backend da 500)
+// Facets: consume desde el Gateway; si falla, devuelve vacío (no rompe UI)
 export async function obtenerFacets() {
-  return { nombres: [], precios: [] };
+  try {
+    if (inCooldown()) return { nombres: [], precios: [] };
+
+    const response = await fetchConTimeout(`${API_URL}/facets`);
+
+    if (response.status === 429) {
+      setCooldown();
+      return { nombres: [], precios: [] };
+    }
+
+    if (!response.ok) return { nombres: [], precios: [] };
+
+    const data = await response.json();
+
+    return {
+      nombres: Array.isArray(data?.nombres) ? data.nombres : [],
+      precios: Array.isArray(data?.precios) ? data.precios : [],
+    };
+  } catch {
+    return { nombres: [], precios: [] };
+  }
 }
