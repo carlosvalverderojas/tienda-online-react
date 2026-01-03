@@ -7,37 +7,54 @@ import {
 import ProductCard from "../components/ProductCard";
 import "./Productos.css";
 
+function toNumberSafe(x) {
+  const n = Number(x);
+  return Number.isFinite(n) ? n : 0;
+}
+
+// Opciones de precio simples (puedes ajustarlas)
+const PRICE_RANGES = [
+  { key: "", label: "Todos los precios", min: null, max: null },
+  { key: "0-50", label: "₡0 - ₡50", min: 0, max: 50 },
+  { key: "51-100", label: "₡51 - ₡100", min: 51, max: 100 },
+  { key: "101-200", label: "₡101 - ₡200", min: 101, max: 200 },
+  { key: "201+", label: "₡201+", min: 201, max: null },
+];
+
 export default function Productos({ onAdd }) {
   const [productos, setProductos] = useState([]);
   const [productosBase, setProductosBase] = useState([]);
+
   const [facets, setFacets] = useState({ nombres: [], precios: [] });
 
-  const [errorFatal, setErrorFatal] = useState(false); // solo si falla cargar productos inicial
-  const [errorBusqueda, setErrorBusqueda] = useState(""); // fallos de buscar/filtros (no crashea)
+  const [errorFatal, setErrorFatal] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [texto, setTexto] = useState("");
   const [cargando, setCargando] = useState(false);
 
   const [filtroNombre, setFiltroNombre] = useState("");
   const [filtroPrecio, setFiltroPrecio] = useState("");
 
-  // Cargar productos + facets UNA sola vez al inicio
+  // Cargar productos + facets
   useEffect(() => {
     const cargar = async () => {
       try {
         setErrorFatal(false);
-        setErrorBusqueda("");
+        setErrorMsg("");
         setCargando(true);
 
-        // 1) Productos (obligatorio)
         const dataProd = await obtenerProductos();
         setProductosBase(dataProd);
         setProductos(dataProd);
 
-        // 2) Facets (opcional: si falla NO rompe la UI)
+        // Facets opcional (si no existe, igual filtramos local)
         try {
           const dataFacets = await obtenerFacets();
-          if (dataFacets && (dataFacets.nombres || dataFacets.precios)) {
-            setFacets(dataFacets);
+          if (dataFacets?.nombres || dataFacets?.precios) {
+            setFacets({
+              nombres: Array.isArray(dataFacets.nombres) ? dataFacets.nombres : [],
+              precios: Array.isArray(dataFacets.precios) ? dataFacets.precios : [],
+            });
           } else {
             setFacets({ nombres: [], precios: [] });
           }
@@ -45,7 +62,6 @@ export default function Productos({ onAdd }) {
           setFacets({ nombres: [], precios: [] });
         }
       } catch {
-        // Solo error fatal si NO se pudieron obtener productos
         setErrorFatal(true);
       } finally {
         setCargando(false);
@@ -55,66 +71,89 @@ export default function Productos({ onAdd }) {
     cargar();
   }, []);
 
-  // Búsqueda en tiempo real con debounce + filtros
+  // Aplicar filtros locales (nombre + precio) SOBRE productosBase
+  const aplicarFiltrosLocales = (lista) => {
+    let out = [...lista];
+
+    if (filtroNombre) {
+      const k = filtroNombre.toLowerCase();
+      out = out.filter((p) => (p.nombre || "").toLowerCase().includes(k));
+    }
+
+    if (filtroPrecio) {
+      const rango = PRICE_RANGES.find((r) => r.key === filtroPrecio);
+      if (rango) {
+        out = out.filter((p) => {
+          const precio = toNumberSafe(p.precio);
+          const okMin = rango.min == null ? true : precio >= rango.min;
+          const okMax = rango.max == null ? true : precio <= rango.max;
+          return okMin && okMax;
+        });
+      }
+    }
+
+    return out;
+  };
+
+  // Búsqueda + filtros
   useEffect(() => {
     if (productosBase.length === 0) return;
 
     const timer = setTimeout(async () => {
-      const valor = texto.trim();
+      setErrorMsg("");
 
-      // Si no hay texto ni filtros: mostrar base (sin llamar backend)
-      if (valor === "" && filtroNombre === "" && filtroPrecio === "") {
-        setErrorBusqueda("");
-        setProductos(productosBase);
+      const q = texto.trim();
+
+      // Si NO hay texto: solo filtros locales
+      if (!q) {
+        const filtrados = aplicarFiltrosLocales(productosBase);
+        setProductos(filtrados);
         return;
       }
 
-      // Si el texto es muy corto (1-2 chars) y no hay filtros: no consultar backend
-      if (
-        valor.length > 0 &&
-        valor.length < 3 &&
-        filtroNombre === "" &&
-        filtroPrecio === ""
-      ) {
-        setErrorBusqueda("");
-        setProductos(productosBase);
+      // texto muy corto -> no llamar backend, pero sí filtrar local por nombre
+      if (q.length < 3) {
+        const filtrados = aplicarFiltrosLocales(
+          productosBase.filter((p) =>
+            (p.nombre || "").toLowerCase().includes(q.toLowerCase())
+          )
+        );
+        setProductos(filtrados);
         return;
       }
 
+      // Si hay texto >= 3: intentamos Elastic (buscarProductos)
       setCargando(true);
-      setErrorBusqueda("");
-
       try {
-        // Construir query combinando texto + filtros
-        let query = valor;
-        if (filtroNombre) query = (query + " " + filtroNombre).trim();
-        if (filtroPrecio) query = (query + " " + filtroPrecio).trim();
+        const data = await buscarProductos(q);
 
-        const data = await buscarProductos(query);
-
-        // Completar campos faltantes (imagen) desde base
+        // Mapeo a datos completos (imagen/descripcion desde base)
         const completos = (data || []).map((p) => {
           const ref = productosBase.find((x) => x.id === p.id);
           return ref ? { ...ref, ...p } : p;
         });
 
-        // Si la búsqueda devuelve vacío, lo mostramos como vacío (no es error)
-        setProductos(completos);
-      } catch (e) {
-        // NO crashear toda la pantalla: volvemos a base y mostramos aviso
-        setProductos(productosBase);
-        setErrorBusqueda(
-          "La búsqueda no está disponible temporalmente. Mostrando catálogo completo."
+        // Aún aplicamos filtros locales encima del resultado de Elastic
+        const filtrados = aplicarFiltrosLocales(completos);
+        setProductos(filtrados);
+      } catch {
+        // Si Elastic falla, seguimos con búsqueda local por nombre
+        const local = productosBase.filter((p) =>
+          (p.nombre || "").toLowerCase().includes(q.toLowerCase())
+        );
+        setProductos(aplicarFiltrosLocales(local));
+        setErrorMsg(
+          "Búsqueda avanzada no disponible temporalmente. Mostrando resultados locales."
         );
       } finally {
         setCargando(false);
       }
-    }, 450);
+    }, 350);
 
     return () => clearTimeout(timer);
   }, [texto, filtroNombre, filtroPrecio, productosBase]);
 
-  if (errorFatal) return <p>No se pudieron cargar los productos</p>;
+  if (errorFatal) return <p>No se pudieron cargar los productos.</p>;
 
   const hayFiltro =
     texto.trim() !== "" || filtroNombre !== "" || filtroPrecio !== "";
@@ -123,7 +162,6 @@ export default function Productos({ onAdd }) {
     <div>
       <h2 className="productos__titulo">Productos</h2>
 
-      {/* Buscador */}
       <input
         type="text"
         placeholder="Buscar producto."
@@ -132,7 +170,6 @@ export default function Productos({ onAdd }) {
         className="productos__buscar"
       />
 
-      {/* Filtros */}
       <div className="productos__filtros">
         <div className="filtro">
           <label className="filtro__label">Sugerencias</label>
@@ -142,9 +179,16 @@ export default function Productos({ onAdd }) {
             onChange={(e) => setFiltroNombre(e.target.value)}
           >
             <option value="">Selecciona una palabra clave</option>
-            {(facets.nombres || []).map((b) => (
-              <option key={b.key} value={b.key}>
-                {b.key} ({b.count})
+
+            {/* Si facets trae nombres, los usamos. Si no, generamos opciones desde productosBase */}
+            {(facets.nombres?.length
+              ? facets.nombres.map((b) => b.key)
+              : Array.from(
+                  new Set(productosBase.map((p) => (p.nombre || "").split(" ")[0]).filter(Boolean))
+                )
+            ).map((k) => (
+              <option key={k} value={k}>
+                {k}
               </option>
             ))}
           </select>
@@ -157,10 +201,9 @@ export default function Productos({ onAdd }) {
             value={filtroPrecio}
             onChange={(e) => setFiltroPrecio(e.target.value)}
           >
-            <option value="">Todos los precios</option>
-            {(facets.precios || []).map((b) => (
-              <option key={b.key} value={b.key}>
-                {b.key} ({b.count})
+            {PRICE_RANGES.map((r) => (
+              <option key={r.key} value={r.key}>
+                {r.label}
               </option>
             ))}
           </select>
@@ -173,7 +216,7 @@ export default function Productos({ onAdd }) {
             setTexto("");
             setFiltroNombre("");
             setFiltroPrecio("");
-            setErrorBusqueda("");
+            setErrorMsg("");
             setProductos(productosBase);
           }}
         >
@@ -181,8 +224,8 @@ export default function Productos({ onAdd }) {
         </button>
       </div>
 
-      {errorBusqueda && <p>{errorBusqueda}</p>}
-      {cargando && <p>Cargando.</p>}
+      {errorMsg && <p>{errorMsg}</p>}
+      {cargando && <p>Cargando...</p>}
 
       <div className="productos__grid">
         {productos.map((producto) => (
